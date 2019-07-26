@@ -7,6 +7,7 @@ FROM nginx:1.15.7-alpine
 RUN apk --update --no-cache add ca-certificates \
     bash \
     mysql-client \
+	yarn \
     supervisor
 
 # trust this project public key to trust the packages.
@@ -37,6 +38,7 @@ RUN apk add --no-cache --update php-fpm@php \
     php-zlib@php \
     php-json@php \
     php-xml@php \
+	php-curl \
     php-gmp && \
     ln -s /usr/bin/php7 /usr/bin/php 
 
