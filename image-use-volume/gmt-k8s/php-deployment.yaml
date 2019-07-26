@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-laravel
+  labels:
+    "project": mgt-tool
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-laravel
+  template:
+    metadata:
+      labels:
+        app: php-laravel
+    spec:
+      volumes:
+      - name: gmt-nginx-config
+        configMap:
+          name: gmt-nginx-config
+      - name: laravel-pvc
+        persistentVolumeClaim:
+          claimName: laravel-pvc
+      containers:
+      - name: php-laravel
+        image: letrungka/gmt:1.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        envFrom:
+          - configMapRef:
+              name: php-configmap
+        volumeMounts:
+        - mountPath: /etc/nginx/sites-enabled
+          name: gmt-nginx-config
+        - mountPath: /var/www/laravel
+          name: laravel-pvc
+        readinessProbe:
+          httpGet:
+            port: 80
+            path: /
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 1
